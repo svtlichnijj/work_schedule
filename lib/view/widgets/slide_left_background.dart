@@ -14,7 +14,6 @@ class SlideLeftBackground extends StatelessWidget {
               return SizedBox.square(
                 dimension: constraints.maxHeight,
                 child: Column(
-                // child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: const <Widget>[
@@ -22,9 +21,6 @@ class SlideLeftBackground extends StatelessWidget {
                       Icons.delete,
                       color: Colors.white,
                     ),
-                    // SizedBox(
-                    //   width: 10,
-                    // ),
                     Text(
                       'Delete',
                       style: TextStyle(
@@ -33,9 +29,6 @@ class SlideLeftBackground extends StatelessWidget {
                       ),
                       textAlign: TextAlign.right,
                     ),
-                    // SizedBox(
-                    //   width: 20,
-                    // ),
                   ],
                 ),
               );

@@ -16,13 +16,13 @@ class _EmployeeAddPageState extends State<EmployeeAddPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(!(widget.employee?.id != null && widget.employee!.id > Model.idForCreating) ?
-          'Add employee Form' :
-          'Edit employee form of ${widget.employee?.name}'
-          ),
+      appBar: AppBar(
+        title: Text(!(widget.employee?.id != null && widget.employee!.id > Model.idForCreating) ?
+        'Add employee Form' :
+        'Edit employee form of ${widget.employee?.name}'
         ),
-        body: EmployeeAddWidget(employee: widget.employee,),
+      ),
+      body: EmployeeAddWidget(employee: widget.employee,),
     );
   }
 }

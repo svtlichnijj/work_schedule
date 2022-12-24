@@ -18,8 +18,6 @@ class ActionYesNoIndexAlertDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('callback');
-    print(callback);
     return AlertDialog(
       title: Text(title),
       content: Text(content),
@@ -28,8 +26,6 @@ class ActionYesNoIndexAlertDialog extends StatelessWidget {
           onPressed: () {
             callback(false, 0);
             Navigator.pop(context, false);
-            // Navigator.pop(context);
-            // Navigator.pop(context, falseText);
           },
           child: Text(falseText),
         ),
@@ -37,8 +33,6 @@ class ActionYesNoIndexAlertDialog extends StatelessWidget {
           onPressed: () {
             callback(true, 0);
             Navigator.pop(context, true);
-            // Navigator.pop(context);
-            // Navigator.pop(context, trueText);
           },
           child: Text(trueText),
         ),

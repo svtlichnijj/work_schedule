@@ -18,7 +18,8 @@ class TextContainer extends StatelessWidget {
             color: Theme.of(context).primaryColor.withOpacity(isTransparent ? 0.0 : 1.0),
             fontSize: 18.0,
           ),
-        ));
+        )
+    );
   }
 
   static getTextError(context, String textError) {

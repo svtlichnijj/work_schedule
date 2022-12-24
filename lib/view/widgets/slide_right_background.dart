@@ -14,20 +14,13 @@ class SlideRightBackground extends StatelessWidget {
               return SizedBox.square(
                 dimension: constraints.maxHeight,
                 child: Column(
-                // child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: const <Widget>[
-                    // SizedBox(
-                    //   width: 20,
-                    // ),
                     Icon(
                       Icons.edit,
                       color: Colors.white,
                     ),
-                    // SizedBox(
-                    //   width: 10,
-                    // ),
                     Text(
                       'Edit',
                       style: TextStyle(

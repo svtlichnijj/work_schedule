@@ -13,21 +13,22 @@ class ButtonNavigation extends StatelessWidget {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          label: 'Employees',
-          icon: Icon(Icons.switch_account)
+            label: 'Employees',
+            icon: Icon(Icons.switch_account)
         ),
         BottomNavigationBarItem(
-          label: 'Calendar',
-          icon: Icon(Icons.calendar_month)
+            label: 'Calendar',
+            icon: Icon(Icons.calendar_month)
         ),
         BottomNavigationBarItem(
-          label: 'Calendars',
-          icon: Icon(Icons.calendar_view_month)
+            label: 'Calendars',
+            icon: Icon(Icons.calendar_view_month)
         ),
       ],
-      onTap: (index) => onSelectTab(
-        TabItem.values[index],
-      ),
+      onTap: (index) =>
+          onSelectTab(
+            TabItem.values[index],
+          ),
       currentIndex: currentTab.index,
     );
   }

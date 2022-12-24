@@ -23,7 +23,6 @@ class ServiceRepository extends Repository {
 
   @override
   Future onCreate(Database db, int version) async {
-    print('onCreate Service');
     await db.execute('''
       CREATE TABLE $tableName (
         $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -32,5 +31,4 @@ class ServiceRepository extends Repository {
       )
     ''');
   }
-
 }

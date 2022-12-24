@@ -6,9 +6,5 @@ abstract class AbstractRepository {
 
   Future<Database> get database;
 
-  // // this opens the database (and creates it if it doesn't exist)
-  // _initDatabase(String filePath);
-  //
   Future onCreate(Database db, int version);
-  // Future _onCreate(Database db, int version);
 }

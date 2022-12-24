@@ -35,7 +35,6 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin<N
     TabItem.calendar: GlobalKey<NavigatorState>(),
     TabItem.calendars: GlobalKey<NavigatorState>(),
   };
-  // GlobalKey globalKeyBottomNavigation = GlobalKey(debugLabel: 'btm_nav');
 
   bool _handleScrollNotification(ScrollNotification notification) {
     if (notification.depth == 0) {
@@ -87,7 +86,6 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin<N
                 sizeFactor: _hide,
                 axisAlignment: -1.0,
                 child: ButtonNavigation(
-                  // key: globalKeyBottomNavigation,
                   currentTab: _currentTab,
                   onSelectTab: _selectTab,
                 )
@@ -99,14 +97,6 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin<N
   }
 
   Widget _buildOffstageNavigator(TabItem tabItem) {
-    // print('---_currentTab');
-    // print(_currentTab);
-    // print('tabItem');
-    // print(tabItem);
-    // print('_navigatorKeys[tabItem]');
-    // print(_navigatorKeys[tabItem]);
-    // print('_navigatorKeys[tabItem]!');
-    // print(_navigatorKeys[tabItem]!);
     return Offstage(
       offstage: _currentTab != tabItem,
       child: TabNavigator(

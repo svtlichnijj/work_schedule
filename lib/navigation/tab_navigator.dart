@@ -17,15 +17,10 @@ class TabNavigator extends StatelessWidget {
 
     return Navigator(
         key: navigatorKey,
-        // initialRoute: TabNavigatorRoutes.employees,
         observers: <NavigatorObserver>[
           ViewNavigatorObserver(onNavigation),
         ],
         onGenerateRoute: (RouteSettings routeSettings) {
-          // print('--routeSettings.name');
-          // print(routeSettings.name);
-          // print('routeBuilders');
-          // print(routeBuilders);
           return MaterialPageRoute(
             settings: routeSettings,
             builder: (BuildContext context) => routeBuilders[routeSettings.name]!(context),
