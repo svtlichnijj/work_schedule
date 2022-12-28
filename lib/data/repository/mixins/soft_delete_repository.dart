@@ -3,7 +3,7 @@ mixin SoftDeleteRepository {
 
   get onCreateRow {
     return '''
-      $columnDeletedAt INTEGER,
+      $columnDeletedAt INTEGER
     ''';
   }
 
@@ -15,7 +15,11 @@ mixin SoftDeleteRepository {
     return '$alias$columnDeletedAt IS NULL';
   }
 
-  get onWhereDeleted {
-    return '$columnDeletedAt IS NOT NULL';
+  static onWhereDeleted({ String alias = '' }) {
+    if (alias != '') {
+      alias += '.';
+    }
+
+    return '$alias$columnDeletedAt IS NOT NULL';
   }
 }

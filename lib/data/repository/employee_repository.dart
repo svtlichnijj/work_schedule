@@ -106,7 +106,7 @@ class EmployeeRepository extends Repository with ForeignRepository, SoftDeleteRe
         $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnName TEXT NOT NULL,
         $columnSpecialtyId INTEGER NOT NULL,
-        $onCreateRow
+        $onCreateRow,
         FOREIGN KEY ($columnSpecialtyId) REFERENCES ${specialtyRepository.tableName} (${SpecialtyRepository.columnId}) 
           ON DELETE NO ACTION ON UPDATE NO ACTION
       )

@@ -2,9 +2,10 @@ import 'package:sqflite/sqflite.dart';
 
 import 'package:work_schedule/data/models/specialty.dart';
 import 'package:work_schedule/data/repository/mixins/foreign_repository.dart';
+import 'package:work_schedule/data/repository/mixins/soft_delete_repository.dart';
 import 'package:work_schedule/data/repository/repository.dart';
 
-class SpecialtyRepository extends Repository with ForeignRepository {
+class SpecialtyRepository extends Repository with ForeignRepository, SoftDeleteRepository {
   @override
   String get tableName => 'specialties_table';
 
@@ -35,7 +36,8 @@ class SpecialtyRepository extends Repository with ForeignRepository {
     await db.execute('''
       CREATE TABLE $tableName (
         $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnName TEXT NOT NULL
+        $columnName TEXT NOT NULL,
+        $onCreateRow
       )
     ''');
 
@@ -75,7 +77,11 @@ class SpecialtyRepository extends Repository with ForeignRepository {
 
   Future<List<Specialty>> specialties({ limitIn = 100 }) async {
     Database db = await _instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(tableName, limit: limitIn);
+    final List<Map<String, dynamic>> maps = await db.query(
+        tableName,
+        where: SoftDeleteRepository.onWhereNotDeleted(),
+        limit: limitIn
+    );
 
     return List.generate(maps.length, (i) => Specialty.fromMap(maps[i]));
   }
@@ -84,7 +90,7 @@ class SpecialtyRepository extends Repository with ForeignRepository {
     Database db = await _instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       tableName,
-      where: '$columnId = ?',
+      where: '$columnId = ? AND ${SoftDeleteRepository.onWhereNotDeleted()}',
       whereArgs: [specialtyId],
     );
 
@@ -107,8 +113,8 @@ class SpecialtyRepository extends Repository with ForeignRepository {
     Database db = await _instance.database;
     Map<String, dynamic> specialtyMap = specialty.toMap();
     int? count = Sqflite.firstIntValue(await db.rawQuery(
-        'SELECT COUNT(*) FROM $tableName WHERE name = ?',
-        [specialty.name]
+        'SELECT COUNT(*) FROM $tableName WHERE id = ?',
+        [specialty.id]
     ));
 
     if (count == 0) {
@@ -126,12 +132,22 @@ class SpecialtyRepository extends Repository with ForeignRepository {
     return specialty;
   }
 
-  Future<int> deleteSpecialty(int id) async {
+  Future<int> softDeleteSpecialty(int specialtyId) async {
+    Database db = await _instance.database;
+    return await db.update(
+        tableName,
+        { SoftDeleteRepository.columnDeletedAt: DateTime.now().millisecondsSinceEpoch },
+        where: '$columnId = ?',
+        whereArgs: [specialtyId]
+    );
+  }
+
+  Future<int> deleteSpecialty(int specialtyId) async {
     Database db = await _instance.database;
     return await db.delete(
         tableName,
         where: '$columnId = ?',
-        whereArgs: [id]
+        whereArgs: [specialtyId]
     );
   }
 }
