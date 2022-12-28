@@ -19,9 +19,11 @@ class MainApp extends StatelessWidget {
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
             foregroundColor: MaterialStatePropertyAll<Color>(Theme.of(context).colorScheme.inversePrimary),
-            textStyle: const MaterialStatePropertyAll<TextStyle>(TextStyle(color: Colors.green)),
             backgroundColor: const MaterialStatePropertyAll<Color>(Colors.brown),
           ),
+        ),
+        tabBarTheme: const TabBarTheme(
+          labelColor: Colors.brown,
         ),
       ),
     );

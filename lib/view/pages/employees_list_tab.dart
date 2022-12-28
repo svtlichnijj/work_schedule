@@ -6,20 +6,20 @@ import 'package:work_schedule/data/repository/employee_repository.dart';
 import 'package:work_schedule/view/pages/employee_add_page.dart';
 import 'package:work_schedule/view/pages/employee_page.dart';
 import 'package:work_schedule/view/widgets/action_yes_no_index_alert_dialog.dart';
-import 'package:work_schedule/view/widgets/slide_left_background.dart';
-import 'package:work_schedule/view/widgets/slide_right_background.dart';
+import 'package:work_schedule/view/widgets/dismissible_background_builder.dart';
 
-class EmployeesListPage extends StatefulWidget {
-  const EmployeesListPage({Key? key}) : super(key: key);
+class EmployeesListTab extends StatefulWidget {
+  const EmployeesListTab({Key? key}) : super(key: key);
 
   @override
-  State<EmployeesListPage> createState() => _EmployeesListPageState();
+  State<EmployeesListTab> createState() => _EmployeesListTabState();
 }
 
-class _EmployeesListPageState extends State<EmployeesListPage> {
+class _EmployeesListTabState extends State<EmployeesListTab> {
   EmployeeRepository employeeRepository = EmployeeRepository();
 
   List<Employee> employees = [];
+  double detailsProgress = 0.0;
 
   FutureOr<void> isReload(dynamic isReload) {
     if (isReload != null && isReload) {
@@ -37,11 +37,8 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Employees list'),
-      ),
       body: employees.isEmpty
-          ? const Center(child: CircularProgressIndicator(backgroundColor: Colors.yellow,),)
+          ? const Center(child: CircularProgressIndicator(),)
           : RefreshIndicator(
         onRefresh: _refillEmployeesList,
         strokeWidth: 3.0,
@@ -52,16 +49,57 @@ class _EmployeesListPageState extends State<EmployeesListPage> {
           itemBuilder: (BuildContext context, int index) {
             return Dismissible(
               key: ValueKey<Employee>(employees[index]),
-              background: const SlideRightBackground(),
-              secondaryBackground: const SlideLeftBackground(),
+              onUpdate: (DismissUpdateDetails details) {
+                setState(() {
+                  detailsProgress = details.progress;
+                });
+              },
+              background: DismissibleBackgroundBuilder(
+                detailsProgress: detailsProgress,
+                color: Colors.green,
+                children: const <Widget>[
+                  Icon(
+                    Icons.edit,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    'Edit',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.left,
+                  ),
+                ],
+              ),
+              secondaryBackground: DismissibleBackgroundBuilder(
+                detailsProgress: detailsProgress,
+                direction: DismissDirection.endToStart,
+                // direction: AxisDirection.right,
+                color: Colors.red,
+                children: const <Widget>[
+                  Icon(
+                    Icons.delete,
+                    color: Colors.white,
+                  ),
+                  Text(
+                    'Delete',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    textAlign: TextAlign.right,
+                  ),
+                ],
+              ),
               confirmDismiss: (direction) async {
                 if (direction == DismissDirection.endToStart) {
                   return await showDialog(
                       context: context,
                       builder: (BuildContext context) {
                         return ActionYesNoIndexAlertDialog(
-                            content: "Are you sure you want to delete ${employees[index].name} (${employees[index]
-                                .specialty.name})?",
+                            content: "Are you sure you want to delete ${employees[index].name} "
+                                "(${employees[index].specialty.name})?",
                             trueText: 'Delete',
                             callback: (isApprove, employeeIndex) => _removeEmployee(isApprove, index)
                         );

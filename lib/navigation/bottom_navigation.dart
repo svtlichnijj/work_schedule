@@ -13,8 +13,8 @@ class ButtonNavigation extends StatelessWidget {
     return BottomNavigationBar(
       items: const <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-            label: 'Employees',
-            icon: Icon(Icons.switch_account)
+            label: 'Assets',
+            icon: Icon(Icons.web_asset)
         ),
         BottomNavigationBarItem(
             label: 'Calendar',

@@ -1,5 +1,5 @@
 enum TabItem {
-  employees('employees'),
+  assets('assets'),
   calendar('calendar'),
   calendars('calendars');
 

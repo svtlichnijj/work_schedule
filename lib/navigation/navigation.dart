@@ -13,7 +13,7 @@ class Navigation extends StatefulWidget {
 }
 
 class _NavigationState extends State<Navigation> with TickerProviderStateMixin<Navigation> {
-  TabItem _currentTab = TabItem.employees;
+  TabItem _currentTab = TabItem.assets;
   late AnimationController _hide;
 
   @override
@@ -31,7 +31,7 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin<N
   }
 
   final Map<TabItem, GlobalKey<NavigatorState>> _navigatorKeys = {
-    TabItem.employees: GlobalKey<NavigatorState>(),
+    TabItem.assets: GlobalKey<NavigatorState>(),
     TabItem.calendar: GlobalKey<NavigatorState>(),
     TabItem.calendars: GlobalKey<NavigatorState>(),
   };
@@ -75,7 +75,7 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin<N
             child: Stack(
               fit: StackFit.expand,
               children: <Widget>[
-                _buildOffstageNavigator(TabItem.employees),
+                _buildOffstageNavigator(TabItem.assets),
                 _buildOffstageNavigator(TabItem.calendar),
                 _buildOffstageNavigator(TabItem.calendars),
               ],

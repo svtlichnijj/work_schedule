@@ -3,7 +3,7 @@ import 'package:work_schedule/examples/flutter_calendar_view/main.dart';
 
 import 'package:work_schedule/examples/table_calendar/main.dart';
 import 'package:work_schedule/navigation/tab_item.dart';
-import 'package:work_schedule/view/pages/employees_list_page.dart';
+import 'package:work_schedule/view/pages/assets_page.dart';
 
 class TabNavigator extends StatelessWidget {
   const TabNavigator({ Key? key, required this.navigatorKey, required this.tabItem, required this.onNavigation}) : super(key: key);
@@ -31,8 +31,8 @@ class TabNavigator extends StatelessWidget {
 
   Map<String, WidgetBuilder> _routeBuilders(BuildContext context) {
     return  {
-      '/': (context) => tabItem == TabItem.employees
-          ? const EmployeesListPage()
+      '/': (context) => tabItem == TabItem.assets
+          ? const AssetsPage()
           : tabItem == TabItem.calendar ? const StartPage() : const MyApp2(),
     };
   }
