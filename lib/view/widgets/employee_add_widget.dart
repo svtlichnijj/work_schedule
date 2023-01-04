@@ -71,9 +71,9 @@ class _EmployeeAddWidgetState extends State<EmployeeAddWidget> {
               }
 
               return ActionYesNoIndexAlertDialog(
-                  content: "Are you sure you want to cancel $dialogContext ?",
+                  content: 'Are you sure you want to cancel $dialogContext ?',
                   falseText: 'Back',
-                  callback: (isApprove, employeeId) => {}
+                  callback: (isApprove) => {}
               );
             },
           );
@@ -97,6 +97,7 @@ class _EmployeeAddWidgetState extends State<EmployeeAddWidget> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Name';
                           }
+
                           return null;
                         },
                         onChanged: (String? value) {

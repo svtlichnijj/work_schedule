@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:work_schedule/view/pages/employees_list_tab.dart';
+import 'package:work_schedule/view/pages/services_list_tab.dart';
 import 'package:work_schedule/view/pages/specialties_list_tab.dart';
 
 class AssetsPage extends StatelessWidget {
@@ -18,7 +20,7 @@ class AssetsPage extends StatelessWidget {
                     text: 'Employees',
                   ),
                   Tab(
-                    text: 'Specialities',
+                    text: 'Specialties',
                   ),
                   Tab(
                     text: 'Services',
@@ -31,9 +33,7 @@ class AssetsPage extends StatelessWidget {
           children: <Widget>[
             EmployeesListTab(),
             SpecialtiesListTab(),
-            Center(
-              child: Text("It's Services sunny here"),
-            ),
+            ServicesListTab(),
           ],
         ),
       ),

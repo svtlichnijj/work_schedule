@@ -1,11 +1,10 @@
 import 'package:sqflite/sqflite.dart';
 
+import 'package:work_schedule/data/providers/sqflite/mixins/soft_delete_repository.dart';
+import 'package:work_schedule/data/providers/sqflite/work_schedule_sqflite_dao.dart';
 import 'package:work_schedule/data/models/specialty.dart';
-import 'package:work_schedule/data/repository/mixins/foreign_repository.dart';
-import 'package:work_schedule/data/repository/mixins/soft_delete_repository.dart';
-import 'package:work_schedule/data/repository/repository.dart';
 
-class SpecialtyRepository extends Repository with ForeignRepository, SoftDeleteRepository {
+class SpecialtyRepository extends WorkScheduleSqfliteDao {
   @override
   String get tableName => 'specialties_table';
 
@@ -25,31 +24,29 @@ class SpecialtyRepository extends Repository with ForeignRepository, SoftDeleteR
 
   List<Map<String, dynamic>> getSpecialtiesMap() {
     return [
-      { 'specialty.id': 1, 'specialty.name': 'Beautician' },
-      { 'specialty.id': 2, 'specialty.name': 'Manicure' },
-      { 'specialty.id': 3, 'specialty.name': 'Masseur' },
+      { '$joinAlias.$columnId': 1, '$joinAlias.$columnName': 'Beautician' },
+      { '$joinAlias.$columnId': 2, '$joinAlias.$columnName': 'Manicure' },
+      { '$joinAlias.$columnId': 3, '$joinAlias.$columnName': 'Masseur' },
     ];
   }
 
-  @override
-  Future onCreate(Database db, int version) async {
+  Future createTable(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $tableName (
         $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnName TEXT NOT NULL,
-        $onCreateRow
-      )
+        $rowCreateSoftDeleteColumn
+      );
     ''');
 
-    await fillSpecialities(databaseIn: db);
+    await fillSpecialties(databaseIn: db);
   }
 
-  Future<List<List<Object?>>> fillSpecialities({ Database? databaseIn }) async {
+  Future<List<List<Object?>>> fillSpecialties({ Database? databaseIn }) async {
     Set<Specialty> specialties = {};
     getSpecialtiesMap().forEach((Map<String, dynamic> employeeMap) {
-      specialties.add(Specialty.fromMapWithAlias(employeeMap));
+      specialties.add(Specialty.fromMap(employeeMap));
     });
-
     List<List<Object?>> result = await insertBatchSpecialties(specialties, databaseIn: databaseIn);
 
     return result;
@@ -57,7 +54,7 @@ class SpecialtyRepository extends Repository with ForeignRepository, SoftDeleteR
 
   Future<int> insertSpecialty(Specialty specialty) async {
     Database db = await _instance.database;
-    return await db.insert(tableName, { 'name': specialty.name});
+    return await db.insert(tableName, specialty.toMap());
   }
 
   Future<List<List<Object?>>> insertBatchSpecialties(Set<Specialty> specialties, { Database? databaseIn }) async {
@@ -75,18 +72,31 @@ class SpecialtyRepository extends Repository with ForeignRepository, SoftDeleteR
     return results;
   }
 
-  Future<List<Specialty>> specialties({ limitIn = 100 }) async {
+  Future<List<Specialty>> specialties({ String? nameLike, int? limitIn = 100, String? orderByIn = 'id DESC' }) async {
     Database db = await _instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(
+    final List<Map<String, dynamic>> result;
+
+    if (nameLike != null && nameLike.isNotEmpty) {
+      result = await db.query(
+        tableName,
+        where: '${SoftDeleteRepository.onWhereNotDeleted()} AND $columnName LIKE ?',
+        whereArgs: ["%$nameLike%"],
+        limit: limitIn,
+        orderBy: orderByIn,
+      );
+    } else {
+      result = await db.query(
         tableName,
         where: SoftDeleteRepository.onWhereNotDeleted(),
-        limit: limitIn
-    );
+        limit: limitIn,
+        orderBy: orderByIn,
+      );
+    }
 
-    return List.generate(maps.length, (i) => Specialty.fromMap(maps[i]));
+    return List.generate(result.length, (i) => Specialty.fromMap(result[i]));
   }
 
-  Future<Specialty> specialty(int specialtyId) async {
+  Future<Specialty> getSpecialty(int specialtyId) async {
     Database db = await _instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       tableName,
@@ -97,24 +107,12 @@ class SpecialtyRepository extends Repository with ForeignRepository, SoftDeleteR
     return Specialty.fromMap(map.last);
   }
 
-  Future<int> updateSpecialty(Specialty specialty) async {
-    Database db = await _instance.database;
-    Map<String, dynamic> specialtyMap = specialty.toMap();
-
-    return await db.update(
-      tableName,
-      specialtyMap,
-      where: '$columnId = ?',
-      whereArgs: [specialtyMap['id']],
-    );
-  }
-
   Future<Specialty> upsertSpecialty(Specialty specialty) async {
     Database db = await _instance.database;
     Map<String, dynamic> specialtyMap = specialty.toMap();
     int? count = Sqflite.firstIntValue(await db.rawQuery(
         'SELECT COUNT(*) FROM $tableName WHERE id = ?',
-        [specialty.id]
+        [specialty.id],
     ));
 
     if (count == 0) {
@@ -125,11 +123,22 @@ class SpecialtyRepository extends Repository with ForeignRepository, SoftDeleteR
           tableName,
           specialtyMap,
           where: 'id = ?',
-          whereArgs: [specialty.id]
+          whereArgs: [specialty.id],
       );
     }
 
     return specialty;
+  }
+
+  Future<int> updateSpecialty(Specialty specialty) async {
+    Database db = await _instance.database;
+
+    return await db.update(
+      tableName,
+      specialty.toMap(),
+      where: '$columnId = ?',
+      whereArgs: [specialty.id],
+    );
   }
 
   Future<int> softDeleteSpecialty(int specialtyId) async {

@@ -3,20 +3,15 @@ import 'dart:async';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
-import 'package:work_schedule/data/repository/abstract_repository.dart';
+abstract class AbstractSqfliteProvider {
+  String get databaseName;
 
-abstract class Repository implements AbstractRepository {
-  @override
-  String get databaseName => 'work_schedule.db';
-
-  @override
   int get databaseVersion => 1;
 
   static late Database _database;
 
   String get tableName;
 
-  @override
   Future<Database> get database async {
     try {
       if (_database != null) return _database;
@@ -34,13 +29,15 @@ abstract class Repository implements AbstractRepository {
       path,
       version: databaseVersion,
       onConfigure: onConfigure,
-      onUpgrade: onUpgrade,
       onCreate: onCreate,
+      onUpgrade: onUpgrade,
       onOpen: onOpen,
     );
   }
 
   Future onConfigure(Database db) async => {};
+
+  Future onCreate(Database db, int version);
 
   Future onUpgrade(Database db, int oldVersion, int newVersion) async => {};
 

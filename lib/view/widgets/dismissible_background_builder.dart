@@ -10,7 +10,7 @@ class DismissibleBackgroundBuilder extends StatelessWidget {
     Key? key,
     required this.detailsProgress,
     this.direction = DismissDirection.startToEnd,
-    this.color,
+    this.color = Colors.red,
     this.children = const <Widget>[]
   }) : super(key: key);
 
