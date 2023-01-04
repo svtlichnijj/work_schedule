@@ -13,10 +13,10 @@ class Service extends Model {
 
   factory Service.fromMap(Map<String, dynamic> map) {
     Service service = Service(
-      name: map['name'],
-      duration: map['duration'],
+      name: map[ServiceRepository.columnName],
+      duration: Duration(seconds: map[ServiceRepository.columnDuration]),
     );
-    service._id = map['id'];
+    service._id = map[ServiceRepository.columnId];
 
     return service;
   }
@@ -26,7 +26,12 @@ class Service extends Model {
     return {
       ServiceRepository.columnId: _id,
       ServiceRepository.columnName: name,
-      ServiceRepository.columnDuration: duration,
+      ServiceRepository.columnDuration: duration.inSeconds,
     };
+  }
+
+  @override
+  String toString() {
+    return '$name (${duration.toString().split('.').first.padLeft(8, '0')})';
   }
 }

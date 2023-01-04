@@ -36,8 +36,9 @@ class _SpecialtiesListTabState extends State<SpecialtiesListTab> {
         child: ListView.builder(
             itemCount: specialties.length,
             itemBuilder: (BuildContext context, int index) {
+              Specialty specialty = specialties[index];
               return Dismissible(
-                key: ValueKey<Specialty>(specialties[index]),
+                key: ValueKey<Specialty>(specialty),
                 onUpdate: (DismissUpdateDetails details) {
                   setState(() {
                     detailsProgress = details.progress;
@@ -45,7 +46,6 @@ class _SpecialtiesListTabState extends State<SpecialtiesListTab> {
                 },
                 background: DismissibleBackgroundBuilder(
                   detailsProgress: detailsProgress,
-                  color: Colors.red,
                   children: const <Widget>[
                     Icon(
                       Icons.delete,
@@ -63,7 +63,6 @@ class _SpecialtiesListTabState extends State<SpecialtiesListTab> {
                 secondaryBackground: DismissibleBackgroundBuilder(
                   detailsProgress: detailsProgress,
                   direction: DismissDirection.endToStart,
-                  color: Colors.red,
                   children: const <Widget>[
                     Icon(
                       Icons.delete,
@@ -83,22 +82,22 @@ class _SpecialtiesListTabState extends State<SpecialtiesListTab> {
                       context: context,
                       builder: (BuildContext context) {
                         return ActionYesNoIndexAlertDialog(
-                            content: "Are you sure you want to delete specialty ${specialties[index].name}?",
+                            content: 'Are you sure you want to delete specialty ${specialty.name}?',
                             trueText: 'Delete',
-                            callback: (isApprove, employeeIndex) => _removeEmployee(isApprove, index)
+                            callback: (isApprove) => _removeEmployee(isApprove, index)
                         );
                       }
                   );
                 },
                 child: InkWell(
                   onTap: () {
-                    print("${specialties[index]} clicked");
+                    print("$specialty clicked");
                   },
                   child: Card(
                     child: ListTile(
                       leading: Text((index + 1).toString()),
                       title: Text(
-                        specialties[index].name,
+                        specialty.name,
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       trailing: const Icon(
@@ -109,11 +108,11 @@ class _SpecialtiesListTabState extends State<SpecialtiesListTab> {
                             context: context,
                             builder: (BuildContext context) {
                               return EditTextAlertDialog(
-                                  title: 'Rename speciality',
-                                  label: 'Speciality',
-                                  textIn: specialties[index].name,
+                                  title: 'Rename specialty',
+                                  label: 'Specialty',
+                                  textIn: specialty.name,
                                   submitText: 'Edit',
-                                  callback: (text, specialityIndex) => _renameSpeciality(text, index)
+                                  callback: (text, specialtyIndex) => _renameSpecialty(text, index)
                               );
                             }
                         );
@@ -142,11 +141,11 @@ class _SpecialtiesListTabState extends State<SpecialtiesListTab> {
     }
   }
 
-  void _renameSpeciality(String specialityName, int specialityIndex) {
-    Specialty specialty = specialties[specialityIndex];
+  void _renameSpecialty(String specialtyName, int specialtyIndex) {
+    Specialty specialty = specialties[specialtyIndex];
 
-    if (specialityName != specialty.name) {
-      specialty.name = specialityName;
+    if (specialtyName != specialty.name) {
+      specialty.name = specialtyName;
       specialtyRepository.upsertSpecialty(specialty);
       setState(() {});
     }

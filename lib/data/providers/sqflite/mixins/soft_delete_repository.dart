@@ -1,7 +1,7 @@
 mixin SoftDeleteRepository {
   static const columnDeletedAt = 'deleted_at';
 
-  get onCreateRow {
+  get rowCreateSoftDeleteColumn {
     return '''
       $columnDeletedAt INTEGER
     ''';

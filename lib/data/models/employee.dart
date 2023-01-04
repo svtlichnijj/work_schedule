@@ -4,7 +4,6 @@ import 'package:work_schedule/data/repository/employee_repository.dart';
 import 'package:work_schedule/data/repository/specialty_repository.dart';
 
 class Employee extends Model {
-  static const int newEmployeeId = 0;
   late int _id;
 
   @override
@@ -107,7 +106,7 @@ class Employee extends Model {
 
   void setSpecialtyFull(int specialtyId) async {
     SpecialtyRepository specialtyRepository = SpecialtyRepository();
-    specialty = await specialtyRepository.specialty(specialtyId);
+    specialty = await specialtyRepository.getSpecialty(specialtyId);
     _specialtyId = specialtyId;
   }
 }

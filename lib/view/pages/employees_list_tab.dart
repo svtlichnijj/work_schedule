@@ -75,8 +75,6 @@ class _EmployeesListTabState extends State<EmployeesListTab> {
               secondaryBackground: DismissibleBackgroundBuilder(
                 detailsProgress: detailsProgress,
                 direction: DismissDirection.endToStart,
-                // direction: AxisDirection.right,
-                color: Colors.red,
                 children: const <Widget>[
                   Icon(
                     Icons.delete,
@@ -98,10 +96,10 @@ class _EmployeesListTabState extends State<EmployeesListTab> {
                       context: context,
                       builder: (BuildContext context) {
                         return ActionYesNoIndexAlertDialog(
-                            content: "Are you sure you want to delete ${employees[index].name} "
-                                "(${employees[index].specialty.name})?",
+                            content: 'Are you sure you want to delete ${employees[index].name} '
+                                '(${employees[index].specialty.name})?',
                             trueText: 'Delete',
-                            callback: (isApprove, employeeIndex) => _removeEmployee(isApprove, index)
+                            callback: (isApprove) => _removeEmployee(isApprove, index)
                         );
                       });
                 } else {

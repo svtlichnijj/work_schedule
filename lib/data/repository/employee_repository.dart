@@ -1,12 +1,11 @@
 import 'package:sqflite/sqflite.dart';
 
 import 'package:work_schedule/data/models/employee.dart';
-import 'package:work_schedule/data/repository/mixins/foreign_repository.dart';
-import 'package:work_schedule/data/repository/mixins/soft_delete_repository.dart';
-import 'package:work_schedule/data/repository/repository.dart';
+import 'package:work_schedule/data/providers/sqflite/mixins/soft_delete_repository.dart';
+import 'package:work_schedule/data/providers/sqflite/work_schedule_sqflite_dao.dart';
 import 'package:work_schedule/data/repository/specialty_repository.dart';
 
-class EmployeeRepository extends Repository with ForeignRepository, SoftDeleteRepository {
+class EmployeeRepository extends WorkScheduleSqfliteDao {
   @override
   String get tableName => 'employees_table';
 
@@ -96,20 +95,16 @@ class EmployeeRepository extends Repository with ForeignRepository, SoftDeleteRe
     ];
   }
 
-  @override
-  Future onCreate(Database db, int version) async {
-    SpecialtyRepository specialtyRepository = SpecialtyRepository();
-    await specialtyRepository.onCreate(db, version);
-
+  Future createTable(Database db, int version) async {
     await db.execute('''
       CREATE TABLE $tableName (
         $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
         $columnName TEXT NOT NULL,
         $columnSpecialtyId INTEGER NOT NULL,
-        $onCreateRow,
-        FOREIGN KEY ($columnSpecialtyId) REFERENCES ${specialtyRepository.tableName} (${SpecialtyRepository.columnId}) 
+        $rowCreateSoftDeleteColumn,
+        FOREIGN KEY ($columnSpecialtyId) REFERENCES ${SpecialtyRepository().tableName} (${SpecialtyRepository.columnId}) 
           ON DELETE NO ACTION ON UPDATE NO ACTION
-      )
+      );
     ''');
 
     await fillEmployees(databaseIn: db);
@@ -138,21 +133,35 @@ class EmployeeRepository extends Repository with ForeignRepository, SoftDeleteRe
       for (Employee employee in employees) {
         batch.insert(tableName, employee.toMap());
       }
-      results.add(await batch.commit());
+
+      results.add(await batch.commit(noResult: false));
     });
 
     return results;
   }
 
-  Future<List<Employee>> employees({ int? limitIn = 100, String? orderByIn = 'id DESC' }) async {
+  Future<List<Employee>> employees({ String? nameLike, int? limitIn = 100, String? orderByIn = 'id DESC' }) async {
     Database db = await _instance.database;
-    final List<Map<String, dynamic>> maps = await db.query(
-      tableName,
-      limit: limitIn,
-      orderBy: orderByIn,
-    );
+    final List<Map<String, dynamic>> result;
 
-    return List.generate(maps.length, (i) => Employee.fromMap(maps[i]));
+    if (nameLike != null && nameLike.isNotEmpty) {
+      result = await db.query(
+        tableName,
+        where: '${SoftDeleteRepository.onWhereNotDeleted()} AND $columnName LIKE ?',
+        whereArgs: ["%$nameLike%"],
+        limit: limitIn,
+        orderBy: orderByIn,
+      );
+    } else {
+      result = await db.query(
+        tableName,
+        where: SoftDeleteRepository.onWhereNotDeleted(),
+        limit: limitIn,
+        orderBy: orderByIn,
+      );
+    }
+
+    return List.generate(result.length, (i) => Employee.fromMap(result[i]));
   }
 
   String _querySelectWithSpecialties() {
@@ -182,7 +191,7 @@ class EmployeeRepository extends Repository with ForeignRepository, SoftDeleteRe
     return List.generate(maps.length, (i) => Employee.fromMapWithSpecialty(maps[i]));
   }
 
-  Future<Employee> employee(int employeeId) async {
+  Future<Employee> getEmployee(int employeeId) async {
     Database db = await _instance.database;
     final List<Map<String, dynamic>> map = await db.query(
       tableName,
@@ -205,11 +214,6 @@ class EmployeeRepository extends Repository with ForeignRepository, SoftDeleteRe
     return Employee.fromMapWithSpecialty(map.last);
   }
 
-  Future<List<Map<String, dynamic>>> employeesLike(name) async {
-    Database db = await _instance.database;
-    return await db.query(tableName, where: "$columnName LIKE '%$name%'");
-  }
-
   Future<int?> employeesCount() async {
     Database db = await _instance.database;
     return Sqflite.firstIntValue(await db.rawQuery('SELECT COUNT(*) FROM $tableName'));
@@ -226,20 +230,20 @@ class EmployeeRepository extends Repository with ForeignRepository, SoftDeleteRe
     );
   }
 
-  Future<int> deleteEmployee(int employeeId) async {
-    Database db = await _instance.database;
-    return await db.delete(
-        tableName,
-        where: '$columnId = ?',
-        whereArgs: [employeeId]
-    );
-  }
-
   Future<int> softDeleteEmployee(int employeeId) async {
     Database db = await _instance.database;
     return await db.update(
         tableName,
         { SoftDeleteRepository.columnDeletedAt: DateTime.now().millisecondsSinceEpoch },
+        where: '$columnId = ?',
+        whereArgs: [employeeId]
+    );
+  }
+
+  Future<int> deleteEmployee(int employeeId) async {
+    Database db = await _instance.database;
+    return await db.delete(
+        tableName,
         where: '$columnId = ?',
         whereArgs: [employeeId]
     );

@@ -1,34 +1,22 @@
-import 'package:sqflite/sqflite.dart';
+import 'package:work_schedule/data/providers/sqflite/service_dao.dart';
+import 'package:work_schedule/data/models/service.dart';
 
-import 'package:work_schedule/data/repository/repository.dart';
-
-class ServiceRepository extends Repository {
-  @override
-  String get databaseName => 'services.db';
-
-  @override
-  get tableName => 'services_table';
-
+class ServiceRepository {
   static const columnId = 'id';
   static const columnName = 'name';
   static const columnDuration = 'duration';
 
-  static final ServiceRepository _instance = ServiceRepository._();
+  final serviceDao = ServiceDao();
+  // ToDo Implement
+  // final serviceWeb = ServiceWeb();
 
-  factory ServiceRepository() {
-    return _instance;
-  }
+  Future getAllServices({String? nameLike}) => serviceDao.getServices(nameLike: nameLike);
 
-  ServiceRepository._();
+  Future insertService(Service service) => serviceDao.createService(service);
 
-  @override
-  Future onCreate(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE $tableName (
-        $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
-        $columnName TEXT NOT NULL
-        $columnDuration INT UNSIGNED NOT NULL DEFAULT '0'
-      )
-    ''');
-  }
+  Future updateService(Service service) => serviceDao.updateService(service);
+
+  Future softDeleteService(int serviceId) => serviceDao.softDeleteService(serviceId);
+
+  Future deleteService(int serviceId) => serviceDao.deleteService(serviceId);
 }

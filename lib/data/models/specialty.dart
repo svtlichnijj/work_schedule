@@ -12,9 +12,9 @@ class Specialty extends Model {
 
   factory Specialty.fromMap(Map<String, dynamic> map) {
     Specialty specialty = Specialty(
-      name: map['name'],
+      name: map[SpecialtyRepository.columnName],
     );
-    specialty._id = map['id'];
+    specialty._id = map[SpecialtyRepository.columnId];
 
     return specialty;
   }
@@ -31,10 +31,15 @@ class Specialty extends Model {
 
   @override
   Map<String, dynamic> toMap() {
-    return {
-      SpecialtyRepository.columnId: _id,
+    Map<String, dynamic> map = {
       SpecialtyRepository.columnName: name,
     };
+
+    if (_id != Model.idForCreating) {
+      map[SpecialtyRepository.columnId] = _id;
+    }
+
+    return map;
   }
 
   @override

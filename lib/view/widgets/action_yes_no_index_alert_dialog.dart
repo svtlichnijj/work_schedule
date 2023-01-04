@@ -5,7 +5,7 @@ class ActionYesNoIndexAlertDialog extends StatelessWidget {
   final String content;
   final String falseText;
   final String trueText;
-  final Function(bool isTrue, int index) callback;
+  final Function(bool isTrue) callback;
 
   const ActionYesNoIndexAlertDialog({
     Key? key,
@@ -24,14 +24,14 @@ class ActionYesNoIndexAlertDialog extends StatelessWidget {
       actions: <Widget>[
         TextButton(
           onPressed: () {
-            callback(false, 0);
+            callback(false);
             Navigator.pop(context, false);
           },
           child: Text(falseText),
         ),
         TextButton(
           onPressed: () {
-            callback(true, 0);
+            callback(true);
             Navigator.pop(context, true);
           },
           child: Text(trueText),
