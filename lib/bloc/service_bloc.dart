@@ -12,7 +12,7 @@ class ServiceBloc {
   //the state of our stream of data like adding
   //new data, change the state of the stream
   //and broadcast it to observers/subscribers
-  static final _serviceController = StreamController<List<Service>>.broadcast();
+  static StreamController<List<Service>> _serviceController = StreamController<List<Service>>.broadcast();
 
   Stream<List<Service>> get services => _serviceController.stream;
 
@@ -21,6 +21,10 @@ class ServiceBloc {
   }
 
   void getServices({String? nameLike}) async {
+    if (_serviceController.isClosed) {
+      _serviceController = StreamController<List<Service>>.broadcast();
+    }
+
     //sink is a way of adding data reactively to the stream
     //by registering a new event
     _serviceController.sink.add(await _serviceRepository.getAllServices(nameLike: nameLike));

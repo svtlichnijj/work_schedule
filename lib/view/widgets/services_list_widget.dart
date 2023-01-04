@@ -93,8 +93,7 @@ class _ServicesListWidgetState extends State<ServicesListWidget> {
     if (crudMenuItem == CrudMenuItems.edit) {
       message = 'You selected edit for $service';
     } else if (crudMenuItem == CrudMenuItems.delete) {
-      dynamic isDeleted = await showDialog(
-      // bool isDeleted = await showDialog(
+      bool isDeleted = await showDialog(
         context: contextIn,
         builder: (BuildContext context) {
           return ActionYesNoIndexAlertDialog(
@@ -109,10 +108,6 @@ class _ServicesListWidgetState extends State<ServicesListWidget> {
         },
       );
 
-      print('isDeleted');
-      print(isDeleted);
-      print('isDeleted.runtimeType');
-      print(isDeleted.runtimeType);
       if (isDeleted) {
         message = 'You deleted service ${service.toString()}';
       }
